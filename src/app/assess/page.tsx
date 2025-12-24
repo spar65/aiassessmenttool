@@ -132,7 +132,7 @@ export default function AssessPage() {
             },
             body: JSON.stringify({
               apiKey: apiKey,
-              model: config.model || "claude-3-5-sonnet-20241022",
+              model: config.model || "claude-sonnet-4-20250514",
               systemPrompt: config.systemPrompt,
               userMessage: question,
               maxTokens: 150,
