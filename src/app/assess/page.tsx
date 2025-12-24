@@ -182,10 +182,12 @@ export default function AssessPage() {
         );
       }
 
-      // Create SDK client
+      // Create SDK client with generous timeouts for slower models
       const client = new AIAssessClient({
         healthCheckKey,
         baseUrl: process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com",
+        perQuestionTimeoutMs: 120000,  // 2 minutes per question
+        overallTimeoutMs: 1800000,     // 30 minutes total
       });
 
       console.log("📡 Connected to AI Assess Tech API");
