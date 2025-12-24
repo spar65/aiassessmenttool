@@ -9,17 +9,35 @@
 
 import { NextResponse } from "next/server";
 
-// The main API URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com";
-
 // The demo Health Check Key (public, rate-limited)
 const DEMO_HEALTH_CHECK_KEY = process.env.NEXT_PUBLIC_HEALTH_CHECK_KEY;
+
+// Get the API URL and ensure it has a valid scheme
+function getApiUrl(): string {
+  let url = process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com";
+  
+  // Add https:// if no scheme is present
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = `https://${url}`;
+  }
+  
+  // Remove trailing slash
+  return url.replace(/\/$/, "");
+}
+
+const API_BASE_URL = getApiUrl();
 
 export async function GET() {
   if (!DEMO_HEALTH_CHECK_KEY) {
     return NextResponse.json(
-      { error: "Demo key not configured" },
-      { status: 500 }
+      { 
+        canProceed: true,
+        limit: 0,
+        remaining: 0,
+        resetAt: new Date().toISOString(),
+        message: "Demo key not configured - proceeding without rate limit check"
+      },
+      { status: 200 }
     );
   }
 
@@ -49,9 +67,16 @@ export async function GET() {
     });
   } catch (error) {
     console.error("[Rate Limit Proxy] Error:", error);
+    // Return a permissive response on error - let the main API handle rate limiting
     return NextResponse.json(
-      { error: "Failed to check rate limit" },
-      { status: 500 }
+      { 
+        canProceed: true,
+        limit: 5,
+        remaining: 5,
+        resetAt: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
+        message: "Rate limit check unavailable - proceeding"
+      },
+      { status: 200 }
     );
   }
 }
