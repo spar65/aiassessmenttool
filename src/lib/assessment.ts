@@ -185,9 +185,6 @@ export function estimateDuration(model: string): string {
     "gpt-3.5-turbo": "4-6 minutes",
     "claude-sonnet-4-20250514": "6-10 minutes",
     "claude-opus-4-20250514": "10-15 minutes",
-    "claude-3-5-sonnet-20241022": "8-12 minutes",
-    "claude-3-5-haiku-20241022": "4-6 minutes",
-    "claude-3-haiku-20240307": "3-5 minutes",
   };
   
   return estimates[model] || "5-10 minutes";

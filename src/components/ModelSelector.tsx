@@ -18,11 +18,8 @@ export const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string
     { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Budget)" },
   ],
   anthropic: [
-    { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Latest & Recommended)" },
+    { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Recommended)" },
     { value: "claude-opus-4-20250514", label: "Claude 4 Opus (Most Capable)" },
-    { value: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet (Stable)" },
-    { value: "claude-3-5-haiku-20241022", label: "Claude 3.5 Haiku (Fast)" },
-    { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku (Budget)" },
   ],
 };
 

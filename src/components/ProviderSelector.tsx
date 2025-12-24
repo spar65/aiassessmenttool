@@ -36,7 +36,7 @@ export const PROVIDERS: ProviderOption[] = [
     icon: "🧠",
     keyPrefix: "sk-ant-",
     keyPlaceholder: "sk-ant-xxxxxxxxxxxxxxxxxx",
-    description: "Claude 3.5 Sonnet, Claude 3 Opus",
+    description: "Claude 4 Sonnet, Claude 4 Opus",
   },
 ];
 
