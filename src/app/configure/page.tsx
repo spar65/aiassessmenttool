@@ -29,7 +29,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   ArrowRight,
   Key,
   MessageSquare,
@@ -40,6 +39,7 @@ import {
   Building2,
   Trash2,
 } from "lucide-react";
+import { Header, Footer } from "@/components";
 import { SavedPrompts } from "@/components/SavedPrompts";
 import { SavedPrompt } from "@/lib/prompts";
 
@@ -225,17 +225,7 @@ export default function ConfigurePage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back</span>
-          </button>
-        </div>
-      </header>
+      <Header showBackButton backUrl="/" />
 
       {/* Main Content */}
       <main className="flex-1 py-12 px-4">
@@ -503,6 +493,9 @@ export default function ConfigurePage() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

@@ -31,11 +31,10 @@ import {
   CheckCircle,
   XCircle,
   ExternalLink,
-  Download,
   RotateCcw,
-  ArrowLeft,
   Shield,
 } from "lucide-react";
+import { Header, Footer } from "@/components";
 
 interface AssessmentResult {
   runId: string;
@@ -111,18 +110,14 @@ export default function ResultsPage({ params }: { params: { runId: string } }) {
     4;
 
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => router.push("/")}
-          className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>New Assessment</span>
-        </button>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <Header showBackButton backUrl="/" />
 
-        {/* Result Header */}
+      {/* Main Content */}
+      <main className="flex-1 py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          {/* Result Header */}
         <div className="glass rounded-2xl p-8 mb-6">
           <div className="flex items-center justify-center mb-6">
             {result.overallPassed ? (
@@ -298,7 +293,11 @@ export default function ResultsPage({ params }: { params: { runId: string } }) {
             </ul>
           </div>
         )}
-      </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

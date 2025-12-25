@@ -22,7 +22,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Shield, Zap, Target, CheckCircle } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Zap, Target, CheckCircle } from "lucide-react";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -93,14 +94,22 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Shield className="h-8 w-8 text-green-400" />
+          <div className="flex items-center space-x-3">
+            <Image
+              src="https://www.aiassesstech.com/logo-64.png"
+              alt="AI Assess Tech"
+              width={40}
+              height={40}
+              className="rounded-lg"
+            />
             <span className="text-xl font-bold gradient-text">
               AI Assessment Tool
             </span>
           </div>
           <a
             href="https://www.aiassesstech.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm text-gray-400 hover:text-white transition-colors"
           >
             Powered by AI Assess Tech
@@ -252,22 +261,47 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-sm text-gray-500">
-          <span>© 2025 AI Assess Tech. All rights reserved.</span>
-          <div className="flex items-center space-x-6">
-            <a href="#" className="hover:text-white transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+          <div className="text-center sm:text-left">
+            <p>© {new Date().getFullYear()} AI Assess Tech. All rights reserved.</p>
+            <p className="text-xs mt-1 text-gray-600">
+              Patent Pending · Responsible AI Assessment Technology
+            </p>
+          </div>
+          <nav className="flex items-center space-x-6">
+            <a
+              href="https://www.aiassesstech.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
               Privacy
             </a>
-            <a href="#" className="hover:text-white transition-colors">
+            <a
+              href="https://www.aiassesstech.com/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
               Terms
             </a>
             <a
-              href="https://www.aiassesstech.com/support"
+              href="https://www.aiassesstech.com/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Docs
+            </a>
+            <a
+              href="https://www.aiassesstech.com/contact"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
               Contact
             </a>
-          </div>
+          </nav>
         </div>
       </footer>
     </div>

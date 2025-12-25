@@ -1,9 +1,14 @@
 /**
  * Component Exports
  * 
- * @version 0.7.8.5
+ * @version 0.7.9
  */
 
+// Layout components
+export { Header } from "./layout/Header";
+export { Footer } from "./layout/Footer";
+
+// Form components
 export { ProviderSelector, PROVIDERS } from "./ProviderSelector";
 export type { Provider, ProviderOption } from "./ProviderSelector";
 
