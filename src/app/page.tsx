@@ -117,6 +117,17 @@ export default function LandingPage() {
         </div>
       </header>
 
+      {/* Got Responsible AI? Tagline Banner */}
+      <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-center">
+          <p className="text-lg sm:text-xl font-semibold">
+            <span className="text-white">Got </span>
+            <span className="gradient-text">Responsible AI</span>
+            <span className="text-white">?</span>
+          </p>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
