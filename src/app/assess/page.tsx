@@ -1,7 +1,7 @@
 /**
  * Assessment Runner Page
  *
- * This page runs the 120-question AI ethics assessment in real-time.
+ * This page runs the 120-question AI morality assessment in real-time.
  *
  * Flow:
  * 1. Load configuration from localStorage
@@ -288,7 +288,7 @@ export default function AssessPage() {
                 Assessment in Progress
               </h2>
               <p className="text-gray-400 text-sm">
-                Testing your AI's ethical alignment...
+                Testing your AI's moral alignment...
               </p>
             </div>
 

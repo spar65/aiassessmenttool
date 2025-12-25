@@ -11,30 +11,30 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aiassessmenttool.com"),
-  title: "What's Your AI's Ethics Score? | AI Assessment Tool",
+  title: "What's Your AI's Morality Score? | AI Assessment Tool",
   description:
-    "Test your AI system across 4 ethical dimensions: Lying, Cheating, Stealing, and Harm. Get your AI's ethics score in under 10 minutes.",
+    "Test your AI system across 4 moral dimensions: Lying, Cheating, Stealing, and Harm. Get your AI's morality score in under 10 minutes.",
   keywords: [
-    "AI ethics",
+    "AI morality",
     "AI assessment",
     "AI safety",
-    "ethical AI",
+    "moral AI",
     "AI testing",
     "AI health check",
   ],
   openGraph: {
-    title: "What's Your AI's Ethics Score?",
+    title: "What's Your AI's Morality Score?",
     description:
-      "Test your AI system across 4 ethical dimensions. Free assessment in under 10 minutes.",
+      "Test your AI system across 4 moral dimensions. Free assessment in under 10 minutes.",
     type: "website",
     url: "https://aiassessmenttool.com",
     siteName: "AI Assessment Tool",
   },
   twitter: {
     card: "summary_large_image",
-    title: "What's Your AI's Ethics Score?",
+    title: "What's Your AI's Morality Score?",
     description:
-      "Test your AI system across 4 ethical dimensions. Free assessment in under 10 minutes.",
+      "Test your AI system across 4 moral dimensions. Free assessment in under 10 minutes.",
   },
   robots: {
     index: true,

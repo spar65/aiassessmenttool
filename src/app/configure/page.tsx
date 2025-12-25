@@ -235,7 +235,7 @@ export default function ConfigurePage() {
               Configure Your Assessment
             </h1>
             <p className="text-gray-400">
-              Set up your AI for the 120-question ethics test
+              Set up your AI for the 120-question morality test
             </p>
           </div>
 

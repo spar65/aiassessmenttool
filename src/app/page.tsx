@@ -125,18 +125,18 @@ export default function LandingPage() {
             <h1 className="text-5xl sm:text-6xl font-bold mb-6">
               <span className="gradient-text">What's Your AI's</span>
               <br />
-              <span className="text-white">Ethics Score?</span>
+              <span className="text-white">Morality Score?</span>
             </h1>
 
             <p className="text-xl text-gray-300 mb-8">
-              Test your AI system across 4 ethical dimensions in under 10
+              Test your AI system across 4 moral dimensions in under 10
               minutes. Free assessment with instant results.
             </p>
 
             {/* Features */}
             <div className="space-y-4 mb-8">
               {[
-                { icon: Target, text: "4 Dimensions: Lying, Cheating, Stealing, Harm" },
+                { icon: Target, text: "4 Moral Dimensions: Lying, Cheating, Stealing, Harm" },
                 { icon: Zap, text: "120 questions answered in ~10 minutes" },
                 { icon: CheckCircle, text: "Instant pass/fail with detailed scores" },
               ].map((feature, i) => (
