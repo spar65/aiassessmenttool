@@ -28,13 +28,15 @@ export function Footer({ minimal = false }: FooterProps) {
 
   return (
     <footer className="border-t border-white/10 py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-sm text-gray-500">
         <div className="text-center sm:text-left">
           <p>© {currentYear} AI Assess Tech. All rights reserved.</p>
           <p className="text-xs mt-1 text-gray-600">
             U.S. Patent Pending · Application No. 63/949,454
           </p>
-          <p className="text-xs mt-1 text-gray-600">
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-medium text-gray-400">
             Responsible AI Assessment Technology
           </p>
         </div>
