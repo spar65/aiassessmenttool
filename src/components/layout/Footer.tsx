@@ -32,7 +32,10 @@ export function Footer({ minimal = false }: FooterProps) {
         <div className="text-center sm:text-left">
           <p>© {currentYear} AI Assess Tech. All rights reserved.</p>
           <p className="text-xs mt-1 text-gray-600">
-            Patent Pending · Responsible AI Assessment Technology
+            U.S. Patent Pending · Application No. 63/949,454
+          </p>
+          <p className="text-xs mt-1 text-gray-600">
+            Responsible AI Assessment Technology
           </p>
         </div>
         <nav className="flex items-center space-x-6">
