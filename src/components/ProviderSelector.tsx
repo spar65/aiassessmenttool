@@ -3,14 +3,14 @@
 /**
  * Provider Selector Component
  * 
- * Toggle between AI providers (OpenAI, Anthropic)
+ * Toggle between AI providers (OpenAI, Anthropic, Gemini, Grok)
  * 
- * @version 0.7.8.5
+ * @version 0.8.7
  */
 
 import { Building2 } from "lucide-react";
 
-export type Provider = "openai" | "anthropic";
+export type Provider = "openai" | "anthropic" | "gemini" | "grok";
 
 export interface ProviderOption {
   value: Provider;
@@ -28,7 +28,7 @@ export const PROVIDERS: ProviderOption[] = [
     icon: "🤖",
     keyPrefix: "sk-",
     keyPlaceholder: "sk-proj-xxxxxxxxxxxxxxxxxx",
-    description: "GPT-4, GPT-4 Turbo, GPT-3.5",
+    description: "GPT-4o, GPT-4 Turbo, GPT-3.5",
   },
   {
     value: "anthropic",
@@ -37,6 +37,22 @@ export const PROVIDERS: ProviderOption[] = [
     keyPrefix: "sk-ant-",
     keyPlaceholder: "sk-ant-xxxxxxxxxxxxxxxxxx",
     description: "Claude 4 Sonnet, Claude 4 Opus",
+  },
+  {
+    value: "gemini",
+    label: "Google Gemini",
+    icon: "✨",
+    keyPrefix: "AIza",
+    keyPlaceholder: "AIzaSyDxxxxxxxxxxxxxxxxxx",
+    description: "Gemini 2.0 Flash, Gemini 1.5 Pro",
+  },
+  {
+    value: "grok",
+    label: "xAI Grok",
+    icon: "🚀",
+    keyPrefix: "xai-",
+    keyPlaceholder: "xai-xxxxxxxxxxxxxxxxxx",
+    description: "Grok 2, Grok Beta",
   },
 ];
 
@@ -58,7 +74,7 @@ export function ProviderSelector({
         <span className="text-sm text-gray-400">Select your AI provider:</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {PROVIDERS.map((provider) => (
           <button
             key={provider.value}

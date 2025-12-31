@@ -5,21 +5,33 @@
  * 
  * Dropdown for selecting AI models based on provider
  * 
- * @version 0.7.8.5
+ * @version 0.8.7
  */
 
 import { Provider } from "./ProviderSelector";
 
 export const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string }[]> = {
   openai: [
-    { value: "gpt-4", label: "GPT-4 (Recommended)" },
-    { value: "gpt-4-turbo", label: "GPT-4 Turbo (Faster)" },
-    { value: "gpt-4o", label: "GPT-4o (Latest)" },
+    { value: "gpt-4o", label: "GPT-4o (Latest & Recommended)" },
+    { value: "gpt-4-turbo", label: "GPT-4 Turbo (Fast)" },
+    { value: "gpt-4", label: "GPT-4 (Stable)" },
     { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Budget)" },
   ],
   anthropic: [
-    { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Recommended)" },
+    { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Latest & Recommended)" },
     { value: "claude-opus-4-20250514", label: "Claude 4 Opus (Most Capable)" },
+    { value: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet (Stable)" },
+    { value: "claude-3-5-haiku-20241022", label: "Claude 3.5 Haiku (Fast)" },
+    { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku (Budget)" },
+  ],
+  gemini: [
+    { value: "gemini-2.0-flash-exp", label: "Gemini 2.0 Flash (Latest)" },
+    { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro (Most Capable)" },
+    { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash (Fast & Recommended)" },
+  ],
+  grok: [
+    { value: "grok-2", label: "Grok 2 (Recommended)" },
+    { value: "grok-beta", label: "Grok Beta" },
   ],
 };
 
