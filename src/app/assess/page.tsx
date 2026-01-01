@@ -302,8 +302,14 @@ export default function AssessPage() {
       // Track question index for partial results
       let questionIndex = partialResults.length;
 
-      // Rate limit protection settings
-      const DELAY_BETWEEN_QUESTIONS_MS = provider === "openai" ? 500 : 100; // OpenAI needs more delay
+      // Rate limit protection settings (v0.8.9: Added Gemini/Grok specific delays)
+      const DELAY_BETWEEN_QUESTIONS_MS: Record<string, number> = {
+        openai: 500,    // OpenAI needs more delay
+        anthropic: 100, // Anthropic is generous
+        gemini: 200,    // Gemini is moderate
+        grok: 200,      // Grok is moderate
+      };
+      const questionDelay = DELAY_BETWEEN_QUESTIONS_MS[provider] || 100;
       const MAX_RETRIES = 3;
       const INITIAL_RETRY_DELAY_MS = 2000;
 
@@ -339,9 +345,9 @@ export default function AssessPage() {
           throw new Error("cancelled");
         }
 
-        // Add delay between questions to avoid rate limits
+        // Add delay between questions to avoid rate limits (v0.8.9)
         if (questionIndex > 0) {
-          await delay(DELAY_BETWEEN_QUESTIONS_MS);
+          await delay(questionDelay);
         }
 
         const answer = await callAIWithRetry(question);
