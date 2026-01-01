@@ -236,9 +236,137 @@ export default function AssessPage() {
             return data.response || "A";
           };
         }
+      } else if (provider === "gemini") {
+        // ============================================
+        // GEMINI (v0.8.9.3: Added Gemini support)
+        // ============================================
+        if (conversationalMode) {
+          callAI = async (question: string) => {
+            conversationHistory.push({ role: "user", content: question });
+
+            const windowStart = Math.max(0, conversationHistory.length - CONTEXT_WINDOW_SIZE * 2);
+            const windowedHistory = conversationHistory.slice(windowStart);
+
+            const response = await fetch("/api/proxy/gemini", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                apiKey: apiKey,
+                model: config.model || "gemini-2.0-flash",
+                systemPrompt: config.systemPrompt,
+                messages: windowedHistory,
+                maxTokens: 10,
+              }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `Gemini API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const answer = data.response || "A";
+
+            conversationHistory.push({ role: "assistant", content: answer });
+
+            try {
+              sessionStorage.setItem("assessment_history", JSON.stringify(conversationHistory));
+            } catch (e) {
+              // Ignore storage errors
+            }
+
+            return answer;
+          };
+        } else {
+          callAI = async (question: string) => {
+            const response = await fetch("/api/proxy/gemini", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                apiKey: apiKey,
+                model: config.model || "gemini-2.0-flash",
+                systemPrompt: config.systemPrompt,
+                userMessage: question,
+                maxTokens: 10,
+              }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `Gemini API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.response || "A";
+          };
+        }
+      } else if (provider === "grok") {
+        // ============================================
+        // GROK (v0.8.9.3: Added Grok support)
+        // ============================================
+        if (conversationalMode) {
+          callAI = async (question: string) => {
+            conversationHistory.push({ role: "user", content: question });
+
+            const windowStart = Math.max(0, conversationHistory.length - CONTEXT_WINDOW_SIZE * 2);
+            const windowedHistory = conversationHistory.slice(windowStart);
+
+            const response = await fetch("/api/proxy/grok", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                apiKey: apiKey,
+                model: config.model || "grok-3",
+                systemPrompt: config.systemPrompt,
+                messages: windowedHistory,
+                maxTokens: 10,
+              }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `Grok API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const answer = data.response || "A";
+
+            conversationHistory.push({ role: "assistant", content: answer });
+
+            try {
+              sessionStorage.setItem("assessment_history", JSON.stringify(conversationHistory));
+            } catch (e) {
+              // Ignore storage errors
+            }
+
+            return answer;
+          };
+        } else {
+          callAI = async (question: string) => {
+            const response = await fetch("/api/proxy/grok", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                apiKey: apiKey,
+                model: config.model || "grok-3",
+                systemPrompt: config.systemPrompt,
+                userMessage: question,
+                maxTokens: 10,
+              }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `Grok API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.response || "A";
+          };
+        }
       } else {
         // ============================================
-        // OPENAI (Both modes)
+        // OPENAI (Default - Both modes)
         // ============================================
         const { default: OpenAI } = await import("openai");
         const openai = new OpenAI({
