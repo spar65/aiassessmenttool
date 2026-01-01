@@ -43,7 +43,8 @@ import { Header, Footer } from "@/components";
 import { SavedPrompts } from "@/components/SavedPrompts";
 import { SavedPrompt } from "@/lib/prompts";
 
-type Provider = "openai" | "anthropic";
+// v0.8.8.2: Added Gemini and Grok support
+type Provider = "openai" | "anthropic" | "gemini" | "grok";
 
 const PROVIDERS = [
   { 
@@ -62,6 +63,22 @@ const PROVIDERS = [
     keyPlaceholder: "sk-ant-xxxxxxxxxxxxxxxxxx",
     description: "Claude 4 Sonnet, Claude 4 Opus"
   },
+  { 
+    value: "gemini" as Provider, 
+    label: "Google Gemini", 
+    icon: "✨",
+    keyPrefix: "AIza",
+    keyPlaceholder: "AIzaSyDxxxxxxxxxxxxxxxxxx",
+    description: "Gemini 2.0 Flash, Gemini 1.5 Pro"
+  },
+  { 
+    value: "grok" as Provider, 
+    label: "xAI Grok", 
+    icon: "🚀",
+    keyPrefix: "xai-",
+    keyPlaceholder: "xai-xxxxxxxxxxxxxxxxxx",
+    description: "Grok 2, Grok Beta"
+  },
 ];
 
 const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string }[]> = {
@@ -74,6 +91,16 @@ const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string }[]> =
   anthropic: [
     { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Recommended)" },
     { value: "claude-opus-4-20250514", label: "Claude 4 Opus (Most Capable)" },
+  ],
+  // v0.8.8.2: Added Gemini and Grok models
+  gemini: [
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash (Recommended)" },
+    { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro (Most Capable)" },
+    { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash (Faster)" },
+  ],
+  grok: [
+    { value: "grok-2", label: "Grok 2 (Recommended)" },
+    { value: "grok-beta", label: "Grok Beta" },
   ],
 };
 
@@ -166,15 +193,47 @@ export default function ConfigurePage() {
         } else {
           setKeyValid(false);
         }
+      } else if (config.provider === "gemini") {
+        // v0.8.8.2: Gemini API key format validation
+        // Valid Gemini keys start with "AIza" and are 39 characters
+        const isValidFormat = 
+          config.apiKey.startsWith("AIza") && 
+          config.apiKey.length >= 35;
+        
+        if (isValidFormat) {
+          setKeyValid(true);
+        } else {
+          setKeyValid(false);
+        }
+      } else if (config.provider === "grok") {
+        // v0.8.8.2: Grok API key format validation
+        // Valid Grok keys start with "xai-"
+        const isValidFormat = 
+          config.apiKey.startsWith("xai-") && 
+          config.apiKey.length >= 20;
+        
+        if (isValidFormat) {
+          setKeyValid(true);
+        } else {
+          setKeyValid(false);
+        }
       }
     } catch (error) {
-      // Network error - for Anthropic this is expected (CORS)
-      // For OpenAI, it's a real error
+      // Network error - for non-OpenAI providers this is expected (CORS)
       if (config.provider === "anthropic") {
-        // Fallback to format check
         const isValidFormat = 
           config.apiKey.startsWith("sk-ant-") && 
           config.apiKey.length >= 100;
+        setKeyValid(isValidFormat);
+      } else if (config.provider === "gemini") {
+        const isValidFormat = 
+          config.apiKey.startsWith("AIza") && 
+          config.apiKey.length >= 35;
+        setKeyValid(isValidFormat);
+      } else if (config.provider === "grok") {
+        const isValidFormat = 
+          config.apiKey.startsWith("xai-") && 
+          config.apiKey.length >= 20;
         setKeyValid(isValidFormat);
       } else {
         setKeyValid(false);
@@ -252,6 +311,7 @@ export default function ConfigurePage() {
               Select which AI provider you want to test:
             </p>
 
+            {/* v0.8.8.2: Updated to 2x2 grid for 4 providers */}
             <div className="grid grid-cols-2 gap-3">
               {PROVIDERS.map((provider) => (
                 <button
@@ -315,9 +375,9 @@ export default function ConfigurePage() {
               <div className="mt-3 flex items-center space-x-2 text-green-400 text-sm">
                 <CheckCircle className="h-4 w-4" />
                 <span>
-                  {config.provider === "anthropic" 
-                    ? "✓ API key format valid - will verify during assessment"
-                    : `✓ API key verified - ${currentProvider?.label} ready`
+                  {config.provider === "openai" 
+                    ? `✓ API key verified - ${currentProvider?.label} ready`
+                    : "✓ API key format valid - will verify during assessment"
                   }
                 </span>
               </div>
