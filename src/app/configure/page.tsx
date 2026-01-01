@@ -92,15 +92,15 @@ const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string }[]> =
     { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Recommended)" },
     { value: "claude-opus-4-20250514", label: "Claude 4 Opus (Most Capable)" },
   ],
-  // v0.8.8.2: Added Gemini and Grok models
+  // v0.8.9.2: Updated to current available models
   gemini: [
     { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash (Recommended)" },
-    { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro (Most Capable)" },
-    { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash (Faster)" },
+    { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash (Latest)" },
+    { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro (Most Capable)" },
   ],
   grok: [
-    { value: "grok-2", label: "Grok 2 (Recommended)" },
-    { value: "grok-beta", label: "Grok Beta" },
+    { value: "grok-3", label: "Grok 3 (Recommended)" },
+    { value: "grok-3-mini", label: "Grok 3 Mini" },
   ],
 };
 

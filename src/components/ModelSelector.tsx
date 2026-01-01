@@ -25,13 +25,13 @@ export const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string
     { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku (Budget)" },
   ],
   gemini: [
-    { value: "gemini-2.0-flash-exp", label: "Gemini 2.0 Flash (Latest)" },
-    { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro (Most Capable)" },
-    { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash (Fast & Recommended)" },
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash (Recommended)" },
+    { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash (Latest)" },
+    { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro (Most Capable)" },
   ],
   grok: [
-    { value: "grok-2", label: "Grok 2 (Recommended)" },
-    { value: "grok-beta", label: "Grok Beta" },
+    { value: "grok-3", label: "Grok 3 (Recommended)" },
+    { value: "grok-3-mini", label: "Grok 3 Mini" },
   ],
 };
 

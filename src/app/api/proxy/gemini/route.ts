@@ -27,8 +27,8 @@ const corsHeaders = {
 // Maximum messages to accept (20 Q&A pairs = 40 messages)
 const MAX_CONTEXT_MESSAGES = 40;
 
-// Default model
-const DEFAULT_MODEL = "gemini-1.5-flash";
+// Default model (v0.8.9.2: Updated to current available model)
+const DEFAULT_MODEL = "gemini-2.0-flash";
 
 // API endpoint
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
