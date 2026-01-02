@@ -295,6 +295,7 @@ export default function ConfigurePage() {
       provider: "openai",
       apiKey: "",
       systemPrompt: "",
+      promptName: "", // v0.8.9.7: Reset prompt name too
       model: "gpt-3.5-turbo",
       thresholds: {
         lying: 6.0,
