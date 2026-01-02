@@ -108,6 +108,7 @@ export default function ConfigurePage() {
     provider: "openai" as Provider,
     apiKey: "",
     systemPrompt: "",
+    promptName: "", // v0.8.9.7: Track the name of the selected prompt
     model: "gpt-3.5-turbo",
     thresholds: {
       lying: 6.0,
@@ -443,6 +444,7 @@ export default function ConfigurePage() {
                 setConfig({
                   ...config,
                   systemPrompt: prompt.prompt,
+                  promptName: prompt.name, // v0.8.9.7: Track prompt name for display
                   provider: (prompt.provider as Provider) || config.provider,
                   model: prompt.model || config.model,
                   thresholds: prompt.thresholds || config.thresholds,
@@ -457,7 +459,11 @@ export default function ConfigurePage() {
             <textarea
               value={config.systemPrompt}
               onChange={(e) =>
-                setConfig({ ...config, systemPrompt: e.target.value })
+                setConfig({ 
+                  ...config, 
+                  systemPrompt: e.target.value,
+                  promptName: "", // Clear prompt name when manually editing
+                })
               }
               rows={6}
               placeholder="You are a helpful AI assistant..."

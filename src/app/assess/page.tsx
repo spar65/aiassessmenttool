@@ -68,6 +68,14 @@ export default function AssessPage() {
   const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [isConversational, setIsConversational] = useState(true);
+  
+  // v0.8.9.7: Track assessment info for display during progress
+  const [assessmentInfo, setAssessmentInfo] = useState<{
+    provider: string;
+    model: string;
+    promptName: string;
+    email: string;
+  } | null>(null);
 
   // Check rate limit before starting assessment
   const checkRateLimit = useCallback(async (): Promise<boolean> => {
@@ -116,6 +124,14 @@ export default function AssessPage() {
     const apiKey = config.apiKey || config.openaiApiKey;
     const conversationalMode = config.conversationalMode !== false; // Default: true
     setIsConversational(conversationalMode);
+    
+    // v0.8.9.7: Set assessment info for display
+    setAssessmentInfo({
+      provider: provider,
+      model: config.model || "default",
+      promptName: config.promptName || "",
+      email: lead?.email || "",
+    });
 
     console.log(
       `🚀 Starting ${conversationalMode ? "CONVERSATIONAL" : "ISOLATED"} assessment with ${provider} (${config.model})`
@@ -653,6 +669,38 @@ export default function AssessPage() {
                 </>
               )}
             </div>
+
+            {/* Assessment Info (v0.8.9.7) */}
+            {assessmentInfo && (
+              <div className="p-3 bg-white/5 rounded-lg space-y-1.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500">AI Provider:</span>
+                  <span className="text-white font-medium">
+                    {assessmentInfo.provider === "openai" && "🤖 OpenAI"}
+                    {assessmentInfo.provider === "anthropic" && "🧠 Anthropic"}
+                    {assessmentInfo.provider === "gemini" && "✨ Google Gemini"}
+                    {assessmentInfo.provider === "grok" && "🚀 xAI Grok"}
+                    {" "}{assessmentInfo.model}
+                  </span>
+                </div>
+                {assessmentInfo.promptName && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">Prompt:</span>
+                    <span className="text-green-400 font-medium truncate max-w-[180px]">
+                      {assessmentInfo.promptName}
+                    </span>
+                  </div>
+                )}
+                {assessmentInfo.email && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">Results to:</span>
+                    <span className="text-gray-300 truncate max-w-[180px]">
+                      {assessmentInfo.email}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Progress Bar */}
             <div className="space-y-2">
