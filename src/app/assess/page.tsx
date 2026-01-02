@@ -704,18 +704,22 @@ export default function AssessPage() {
           </div>
         )}
 
-        {/* Rate Limited State */}
+        {/* Rate Limited State - SDK Assessment Limit (NOT AI Provider) */}
         {status === "rate-limited" && rateLimitStatus && (
           <div className="text-center space-y-4">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-500/20 mb-4">
               <AlertTriangle className="h-8 w-8 text-yellow-400" />
             </div>
-            <h2 className="text-xl font-semibold text-white">Rate Limit Reached</h2>
-            <p className="text-gray-400 text-sm">{rateLimitStatus.message}</p>
+            <h2 className="text-xl font-semibold text-white">Demo Assessment Limit Reached</h2>
+            <p className="text-gray-400 text-sm">
+              You&apos;ve used all your free demo assessments.
+              <br />
+              <span className="text-yellow-400">This is NOT an issue with your AI provider.</span>
+            </p>
             <div className="p-4 bg-white/5 rounded-lg">
               <div className="grid grid-cols-2 gap-4 text-center text-sm">
                 <div>
-                  <div className="text-gray-400">Used</div>
+                  <div className="text-gray-400">Assessments Used</div>
                   <div className="text-white font-semibold">
                     {rateLimitStatus.limit - rateLimitStatus.remaining} / {rateLimitStatus.limit}
                   </div>
@@ -728,20 +732,26 @@ export default function AssessPage() {
                 </div>
               </div>
             </div>
-            <p className="text-sm text-gray-500">
-              Want unlimited assessments?{" "}
+            
+            {/* Upgrade CTA - Primary Action */}
+            <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+              <p className="text-green-400 font-semibold mb-2">🚀 Get Unlimited Assessments</p>
+              <p className="text-gray-400 text-xs mb-3">
+                Create a free account for higher limits, or upgrade to a paid plan for unlimited AI ethics testing.
+              </p>
               <a
-                href="https://www.aiassesstech.com"
+                href="https://www.aiassesstech.com/pricing"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-green-400 hover:text-green-300 underline"
+                className="block w-full py-3 bg-green-500 hover:bg-green-400 text-black font-semibold rounded-lg transition-colors text-center"
               >
-                Sign up for a free account
+                View Plans & Pricing
               </a>
-            </p>
+            </div>
+            
             <button
               onClick={handleGoBack}
-              className="w-full py-3 bg-green-500 hover:bg-green-400 text-black font-semibold rounded-lg transition-colors"
+              className="w-full py-2 bg-white/10 hover:bg-white/20 text-gray-300 rounded-lg transition-colors text-sm"
             >
               Go Back
             </button>
@@ -758,16 +768,49 @@ export default function AssessPage() {
 
         {(status === "error" || status === "cancelled") && (
           <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 mb-4">
-              <XCircle className="h-8 w-8 text-red-400" />
+            <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
+              error.includes("🔒") ? "bg-yellow-500/20" : "bg-red-500/20"
+            }`}>
+              {error.includes("🔒") ? (
+                <AlertTriangle className="h-8 w-8 text-yellow-400" />
+              ) : (
+                <XCircle className="h-8 w-8 text-red-400" />
+              )}
             </div>
             <h2 className="text-xl font-semibold text-white">
-              {status === "cancelled" ? "Assessment Cancelled" : "Error"}
+              {status === "cancelled" 
+                ? "Assessment Cancelled" 
+                : error.includes("🔒") 
+                  ? "Assessment Limit Reached" 
+                  : "Error"}
             </h2>
             <p className="text-gray-400 text-sm">{error}</p>
+            
+            {/* Show upgrade CTA for SDK rate limit errors */}
+            {error.includes("🔒") && (
+              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                <p className="text-green-400 font-semibold mb-2">🚀 Need More Assessments?</p>
+                <p className="text-gray-400 text-xs mb-3">
+                  Create a free account or upgrade to unlock unlimited AI ethics testing.
+                </p>
+                <a
+                  href="https://www.aiassesstech.com/pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 bg-green-500 hover:bg-green-400 text-black font-semibold rounded-lg transition-colors text-center"
+                >
+                  View Plans & Pricing
+                </a>
+              </div>
+            )}
+            
             <button
               onClick={handleGoBack}
-              className="w-full py-3 bg-green-500 hover:bg-green-400 text-black font-semibold rounded-lg transition-colors"
+              className={`w-full py-3 rounded-lg transition-colors ${
+                error.includes("🔒") 
+                  ? "bg-white/10 hover:bg-white/20 text-gray-300" 
+                  : "bg-green-500 hover:bg-green-400 text-black font-semibold"
+              }`}
             >
               Go Back
             </button>
@@ -785,39 +828,55 @@ function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     const err = error as Error & { code?: string; status?: number; tier?: string };
 
-    // SDK-specific errors
+    // ==========================================================================
+    // SDK ASSESSMENT LIMITS (aiassesstech.com platform limits)
+    // These are NOT AI provider issues - user needs to upgrade their plan
+    // ==========================================================================
     if (err.code === "INVALID_KEY") {
       return "Invalid Health Check Key. Please contact support.";
     }
     if (err.code === "RATE_LIMITED" || err.code === "RATE_LIMIT_EXCEEDED") {
       const isDemoLimit = err.message?.includes("Demo tier") || err.tier === "DEMO";
       if (isDemoLimit) {
-        return "Demo limit reached (5 assessments/hour). Please wait an hour or sign up at aiassesstech.com for unlimited access.";
+        return "🔒 Demo Assessment Limit Reached (5/hour). Your AI provider is working fine! Sign up at aiassesstech.com/pricing for unlimited assessments.";
       }
-      return "Rate limit reached. Please wait and try again.";
+      return "🔒 Assessment Limit Reached. Your AI provider is working fine! Upgrade your plan at aiassesstech.com/pricing for more assessments.";
+    }
+    if (err.code === "SAFETY_LIMIT") {
+      return "🔒 Safety Limit Reached. You can raise this limit in your dashboard at aiassesstech.com.";
     }
     if (err.code === "QUESTION_TIMEOUT") {
-      return "A question timed out. Your AI may be responding too slowly.";
+      return "⏱️ Question Timeout. Your AI took too long to respond. Try a faster model.";
     }
     if (err.code === "OVERALL_TIMEOUT") {
-      return "Assessment timed out. Please try again with a faster model.";
+      return "⏱️ Assessment Timeout. The full test took too long. Try a faster model.";
     }
 
-    // Provider-specific errors
-    if (err.status === 401 || err.message?.includes("401")) {
-      return "Your API key appears to be invalid. Please check and try again.";
+    // ==========================================================================
+    // AI PROVIDER ERRORS (OpenAI, Anthropic, Gemini, Grok issues)
+    // These ARE related to the user's AI provider or API key
+    // ==========================================================================
+    if (err.status === 401 || err.message?.includes("401") || err.message?.includes("unauthorized")) {
+      return "🔑 Invalid API Key. Your AI provider rejected the key. Please check it's correct and active.";
     }
-    if (err.status === 429 || err.message?.includes("rate")) {
-      if (err.message?.includes("Demo tier")) {
-        return "Demo limit reached (5 assessments/hour). Please wait an hour or sign up at aiassesstech.com for unlimited access.";
+    if (err.status === 403 || err.message?.includes("403") || err.message?.includes("forbidden")) {
+      return "🔑 API Access Denied. Your AI provider blocked the request. Check your account permissions.";
+    }
+    if (err.status === 429 || err.message?.includes("rate") || err.message?.includes("too many")) {
+      // Check if this is an SDK limit or AI provider limit
+      if (err.message?.includes("Demo tier") || err.message?.includes("assessment")) {
+        return "🔒 Demo Assessment Limit Reached. Your AI is fine! Sign up at aiassesstech.com/pricing for unlimited access.";
       }
-      return "AI provider rate limit reached. Please wait a moment and try again.";
+      return "⚠️ AI Provider Rate Limit. Your AI provider (OpenAI/Anthropic/etc.) is rate-limiting requests. Wait a moment and try again, or use a different API key.";
     }
-    if (err.message?.includes("insufficient") || err.message?.includes("credit")) {
-      return "Your API account may not have sufficient credits.";
+    if (err.message?.includes("insufficient") || err.message?.includes("credit") || err.message?.includes("quota")) {
+      return "💳 Insufficient Credits. Your AI provider account needs more credits. Add funds at your provider's billing page.";
     }
-    if (err.message?.includes("network") || err.message?.includes("fetch")) {
-      return "Network error. Please check your connection.";
+    if (err.message?.includes("network") || err.message?.includes("fetch") || err.message?.includes("ECONNREFUSED")) {
+      return "🌐 Network Error. Check your internet connection and try again.";
+    }
+    if (err.message?.includes("model") && err.message?.includes("not found")) {
+      return "❌ Model Not Found. The selected AI model doesn't exist or isn't available. Try a different model.";
     }
     if (err.message?.includes("Anthropic")) {
       return err.message;

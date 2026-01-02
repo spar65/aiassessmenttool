@@ -118,6 +118,35 @@ export default function ConfigurePage() {
   });
   const [keyValid, setKeyValid] = useState<boolean | null>(null);
   const [validating, setValidating] = useState(false);
+  
+  // Rate limit state - show remaining assessments
+  const [rateLimit, setRateLimit] = useState<{
+    remaining: number;
+    limit: number;
+    resetAt: string;
+    tier?: string;
+  } | null>(null);
+
+  // Fetch rate limit on mount
+  useEffect(() => {
+    async function fetchRateLimit() {
+      try {
+        const response = await fetch("/api/rate-limit");
+        const data = await response.json();
+        if (data.remaining !== undefined && data.limit !== undefined) {
+          setRateLimit({
+            remaining: data.remaining,
+            limit: data.limit,
+            resetAt: data.resetAt,
+            tier: data.tier,
+          });
+        }
+      } catch (err) {
+        console.warn("Could not fetch rate limit:", err);
+      }
+    }
+    fetchRateLimit();
+  }, []);
 
   useEffect(() => {
     // Load saved config from localStorage
@@ -515,11 +544,51 @@ export default function ConfigurePage() {
             </div>
           </div>
 
+          {/* Remaining Assessments Indicator */}
+          {rateLimit && (
+            <div className={`p-4 rounded-lg mb-6 ${
+              rateLimit.remaining === 0 
+                ? "bg-red-500/10 border border-red-500/30" 
+                : rateLimit.remaining <= 2
+                  ? "bg-yellow-500/10 border border-yellow-500/30"
+                  : "bg-green-500/10 border border-green-500/30"
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`font-semibold ${
+                    rateLimit.remaining === 0 ? "text-red-400" : rateLimit.remaining <= 2 ? "text-yellow-400" : "text-green-400"
+                  }`}>
+                    {rateLimit.remaining === 0 
+                      ? "🔒 No Assessments Remaining" 
+                      : `✓ ${rateLimit.remaining} of ${rateLimit.limit} Assessments Available`}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {rateLimit.remaining === 0 
+                      ? `Resets at ${new Date(rateLimit.resetAt).toLocaleTimeString()}`
+                      : rateLimit.tier === "DEMO" 
+                        ? "Demo tier - sign up for higher limits"
+                        : "Your current tier"}
+                  </p>
+                </div>
+                {rateLimit.remaining <= 2 && (
+                  <a
+                    href="https://www.aiassesstech.com/pricing"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-green-500 hover:bg-green-400 text-black text-xs font-semibold rounded transition-colors"
+                  >
+                    Upgrade
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Start Button */}
           <div className="flex flex-col items-center space-y-4">
             <button
               onClick={handleStartAssessment}
-              disabled={!isReady}
+              disabled={!isReady || (rateLimit?.remaining === 0)}
               className="w-full max-w-md flex items-center justify-center space-x-2 px-6 py-4 bg-green-500 hover:bg-green-400 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-all"
             >
               <span>Start 120-Question Assessment</span>
