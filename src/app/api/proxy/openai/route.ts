@@ -25,7 +25,8 @@ const corsHeaders = {
 const MAX_CONTEXT_MESSAGES = 40;
 
 // Default model
-const DEFAULT_MODEL = "gpt-4o";
+// v0.8.9.5: Updated to GPT-3.5 (GPT-4 rate limited)
+const DEFAULT_MODEL = "gpt-3.5-turbo";
 
 // API endpoint
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";

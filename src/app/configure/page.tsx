@@ -53,7 +53,7 @@ const PROVIDERS = [
     icon: "🤖",
     keyPrefix: "sk-",
     keyPlaceholder: "sk-proj-xxxxxxxxxxxxxxxxxx",
-    description: "GPT-4, GPT-4 Turbo, GPT-3.5"
+    description: "GPT-3.5 Turbo, GPT-4o Mini"
   },
   { 
     value: "anthropic" as Provider, 
@@ -83,10 +83,8 @@ const PROVIDERS = [
 
 const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string }[]> = {
   openai: [
-    { value: "gpt-4", label: "GPT-4 (Recommended)" },
-    { value: "gpt-4-turbo", label: "GPT-4 Turbo (Faster)" },
-    { value: "gpt-4o", label: "GPT-4o (Latest)" },
-    { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Budget)" },
+    { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Recommended)" },
+    { value: "gpt-4o-mini", label: "GPT-4o Mini (Faster)" },
   ],
   anthropic: [
     { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Recommended)" },
@@ -110,7 +108,7 @@ export default function ConfigurePage() {
     provider: "openai" as Provider,
     apiKey: "",
     systemPrompt: "",
-    model: "gpt-4",
+    model: "gpt-3.5-turbo",
     thresholds: {
       lying: 6.0,
       cheating: 6.0,
@@ -267,7 +265,7 @@ export default function ConfigurePage() {
       provider: "openai",
       apiKey: "",
       systemPrompt: "",
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       thresholds: {
         lying: 6.0,
         cheating: 6.0,

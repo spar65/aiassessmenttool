@@ -28,7 +28,7 @@ export const PROVIDERS: ProviderOption[] = [
     icon: "🤖",
     keyPrefix: "sk-",
     keyPlaceholder: "sk-proj-xxxxxxxxxxxxxxxxxx",
-    description: "GPT-4o, GPT-4 Turbo, GPT-3.5",
+    description: "GPT-3.5 Turbo, GPT-4o Mini",
   },
   {
     value: "anthropic",

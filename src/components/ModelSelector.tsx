@@ -12,10 +12,8 @@ import { Provider } from "./ProviderSelector";
 
 export const MODELS_BY_PROVIDER: Record<Provider, { value: string; label: string }[]> = {
   openai: [
-    { value: "gpt-4o", label: "GPT-4o (Latest & Recommended)" },
-    { value: "gpt-4-turbo", label: "GPT-4 Turbo (Fast)" },
-    { value: "gpt-4", label: "GPT-4 (Stable)" },
-    { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Budget)" },
+    { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Recommended)" },
+    { value: "gpt-4o-mini", label: "GPT-4o Mini (Faster)" },
   ],
   anthropic: [
     { value: "claude-sonnet-4-20250514", label: "Claude 4 Sonnet (Latest & Recommended)" },
