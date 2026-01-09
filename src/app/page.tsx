@@ -44,7 +44,7 @@ export default function LandingPage() {
 
     try {
       // Register lead with server (optional - continue even if fails)
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://aiassesstech.com";
       let leadId: string | undefined;
       
       try {

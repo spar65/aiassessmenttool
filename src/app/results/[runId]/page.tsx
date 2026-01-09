@@ -255,7 +255,7 @@ export default function ResultsPage({ params }: { params: { runId: string } }) {
           </button>
 
           <a
-            href={`https://www.aiassesstech.com/verify/${result.runId}`}
+            href={`https://aiassesstech.com/verify/result/${result.runId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center space-x-2 px-6 py-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"

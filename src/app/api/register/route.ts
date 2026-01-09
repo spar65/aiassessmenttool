@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // The main API URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://aiassesstech.com";
 
 export async function POST(request: NextRequest) {
   try {

@@ -526,7 +526,7 @@ export default function AssessPage() {
 
       const client = new AIAssessClient({
         healthCheckKey,
-        baseUrl: process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com",
+        baseUrl: process.env.NEXT_PUBLIC_API_URL || "https://aiassesstech.com",
         perQuestionTimeoutMs: 120000,
         overallTimeoutMs: 1800000,
       });

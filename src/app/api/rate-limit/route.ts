@@ -14,7 +14,7 @@ const DEMO_HEALTH_CHECK_KEY = process.env.NEXT_PUBLIC_HEALTH_CHECK_KEY;
 
 // Get the API URL and ensure it has a valid scheme
 function getApiUrl(): string {
-  let url = process.env.NEXT_PUBLIC_API_URL || "https://www.aiassesstech.com";
+  let url = process.env.NEXT_PUBLIC_API_URL || "https://aiassesstech.com";
   
   // Add https:// if no scheme is present
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
