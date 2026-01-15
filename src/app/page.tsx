@@ -34,6 +34,8 @@ export default function LandingPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // v1.5.1: Honeypot field for bot detection
+  const [website, setWebsite] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +58,7 @@ export default function LandingPage() {
             companyName: formData.companyName,
             role: formData.role || undefined,
             source: "demo-app",
+            website, // v1.5.1: Honeypot field
           }),
         });
 
@@ -173,6 +176,18 @@ export default function LandingPage() {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* v1.5.1: Honeypot field - invisible to humans, bots will fill it */}
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="absolute -left-[9999px] opacity-0 h-0 w-0 pointer-events-none"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+              
               <div>
                 <label
                   htmlFor="email"
