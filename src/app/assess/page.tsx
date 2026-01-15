@@ -31,7 +31,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, XCircle, Clock, Zap, AlertTriangle, MessageCircle, FileText } from "lucide-react";
+import { Loader2, XCircle, Clock, Zap, AlertTriangle, MessageCircle, FileText, Shield, ExternalLink } from "lucide-react";
 import { Header, Footer } from "@/components";
 
 interface Progress {
@@ -451,7 +451,7 @@ export default function AssessPage() {
         openai: 500,    // OpenAI needs more delay
         anthropic: 100, // Anthropic is generous
         gemini: 200,    // Gemini is moderate
-        grok: 200,      // Grok is moderate
+        grok: 1500,     // xAI has strict rate limits (60 req/min) - needs ~1.5s spacing
       };
       const questionDelay = DELAY_BETWEEN_QUESTIONS_MS[provider] || 100;
       const MAX_RETRIES = 3;
@@ -551,6 +551,8 @@ export default function AssessPage() {
           conversationalMode,
           leadId: lead?.leadId,
           email: lead?.email,
+          // v1.2.22: Include system prompt for tracking
+          systemPrompt: config.systemPrompt,
         },
       });
 
@@ -699,6 +701,21 @@ export default function AssessPage() {
                     </span>
                   </div>
                 )}
+                {/* Question Bank with ETH Verification */}
+                <div className="flex items-center justify-between pt-1.5 border-t border-white/10">
+                  <span className="text-gray-500">Question Bank:</span>
+                  <a
+                    href="https://etherscan.io/tx/0xea1c7c85fb5902b0db213f444c4a30c4bc63f62b4cb264d177b5893d0142fa47"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors"
+                  >
+                    <Shield className="h-3 w-3" />
+                    <span className="font-medium">Morality v1.0.0</span>
+                    <span className="text-emerald-500 text-[10px]">ETH Verified</span>
+                    <ExternalLink className="h-2.5 w-2.5 opacity-70" />
+                  </a>
+                </div>
               </div>
             )}
 

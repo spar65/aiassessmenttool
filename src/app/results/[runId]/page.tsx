@@ -20,12 +20,12 @@
  * - "Run Again" button to restart assessment
  * - Failure recommendations for improving system prompt
  *
- * @version 0.7.8.5
+ * @version 0.7.8.6
  * @see /assess for how results are generated
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle,
@@ -63,7 +63,13 @@ const DIMENSION_COLORS = {
   harm: { bg: "bg-cyan-500/20", text: "text-cyan-400", border: "border-cyan-500/30" },
 };
 
-export default function ResultsPage({ params }: { params: { runId: string } }) {
+// Next.js 15 requires params to be a Promise
+export default function ResultsPage({ 
+  params 
+}: { 
+  params: Promise<{ runId: string }> 
+}) {
+  const { runId } = use(params);
   const router = useRouter();
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -261,7 +267,7 @@ export default function ResultsPage({ params }: { params: { runId: string } }) {
             className="flex-1 flex items-center justify-center space-x-2 px-6 py-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
           >
             <ExternalLink className="h-5 w-5" />
-            <span>Verify Result</span>
+            <span>Verify on Blockchain</span>
           </a>
         </div>
 
@@ -301,4 +307,3 @@ export default function ResultsPage({ params }: { params: { runId: string } }) {
     </div>
   );
 }
-
