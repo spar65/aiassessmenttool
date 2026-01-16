@@ -25,7 +25,7 @@
  */
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle,
@@ -63,13 +63,13 @@ const DIMENSION_COLORS = {
   harm: { bg: "bg-cyan-500/20", text: "text-cyan-400", border: "border-cyan-500/30" },
 };
 
-// Next.js 15 requires params to be a Promise
+// Next.js 14: params is a plain object (NOT a Promise like in Next.js 15)
 export default function ResultsPage({ 
   params 
 }: { 
-  params: Promise<{ runId: string }> 
+  params: { runId: string } 
 }) {
-  const { runId } = use(params);
+  const { runId } = params;
   const router = useRouter();
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const [loading, setLoading] = useState(true);
