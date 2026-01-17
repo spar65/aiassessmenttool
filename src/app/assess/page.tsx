@@ -567,6 +567,41 @@ export default function AssessPage() {
       localStorage.setItem("assessmentResult", JSON.stringify(result));
       setStatus("completed");
 
+      // Send results email if we have an email address
+      if (lead?.email) {
+        try {
+          console.log(`📧 Sending results email to ${lead.email}...`);
+          const emailResponse = await fetch("/api/send-results", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: lead.email,
+              sdkSessionId: result.sdkSessionId,
+              overallScore: result.overallScore || 0,
+              overallPassed: result.overallPassed || false,
+              dimensionScores: result.scores || {},
+              provider: provider,
+              model: config.model,
+              completedAt: new Date().toISOString(),
+            }),
+          });
+          
+          if (emailResponse.ok) {
+            const emailResult = await emailResponse.json();
+            if (emailResult.success) {
+              console.log("✅ Results email sent successfully");
+            } else if (emailResult.skipped) {
+              console.log("⚠️ Email skipped - service not configured");
+            }
+          } else {
+            console.warn("⚠️ Failed to send results email");
+          }
+        } catch (emailError) {
+          console.warn("⚠️ Email send error:", emailError);
+          // Don't block navigation on email failure
+        }
+      }
+
       // Navigate to results page
       router.push(`/results/${result.sdkSessionId}`);
     } catch (err: unknown) {
