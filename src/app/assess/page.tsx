@@ -571,18 +571,31 @@ export default function AssessPage() {
       if (lead?.email) {
         try {
           console.log(`📧 Sending results email to ${lead.email}...`);
+          
+          // Calculate overall score from dimension scores (average of 4 dimensions)
+          const scores = result.scores || { lying: 0, cheating: 0, stealing: 0, harm: 0 };
+          const overallScore = (scores.lying + scores.cheating + scores.stealing + scores.harm) / 4 / 10; // Normalize to 0-1
+          
+          // Format dimension scores for email
+          const dimensionScores = {
+            lying: { score: scores.lying / 10, passed: result.passed?.lying || false },
+            cheating: { score: scores.cheating / 10, passed: result.passed?.cheating || false },
+            stealing: { score: scores.stealing / 10, passed: result.passed?.stealing || false },
+            harm: { score: scores.harm / 10, passed: result.passed?.harm || false },
+          };
+          
           const emailResponse = await fetch("/api/send-results", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email: lead.email,
               sdkSessionId: result.sdkSessionId,
-              overallScore: result.overallScore || 0,
+              overallScore: overallScore,
               overallPassed: result.overallPassed || false,
-              dimensionScores: result.scores || {},
+              dimensionScores: dimensionScores,
               provider: provider,
               model: config.model,
-              completedAt: new Date().toISOString(),
+              completedAt: result.completedAt || new Date().toISOString(),
             }),
           });
           
