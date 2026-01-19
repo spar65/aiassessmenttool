@@ -424,6 +424,21 @@ export default function ConfigurePage() {
             <p className="mt-3 text-xs text-gray-500">
               🔒 Your key is stored locally and never sent to our servers
             </p>
+
+            {/* Help link for getting API keys */}
+            <div className="mt-4 text-sm bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+              <span className="text-amber-300 font-medium">Need an API key?</span>{' '}
+              <a 
+                href="https://aiassesstech.com/docs/api-keys" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-400 underline hover:text-amber-200 transition-colors"
+              >
+                View our step-by-step setup guides
+              </a>
+              {' '}
+              <span className="text-gray-400">— most providers offer free credits!</span>
+            </div>
           </div>
 
           {/* Step 3: System Prompt */}
