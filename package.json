@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aiassesstech/sdk": "^0.7.0",
+    "@aiassesstech/sdk": "^0.7.1",
     "@anthropic-ai/sdk": "^0.32.1",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-progress": "^1.0.3",
