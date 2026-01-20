@@ -413,11 +413,23 @@ export default function ConfigurePage() {
             )}
 
             {keyValid === false && (
-              <div className="mt-3 flex items-center space-x-2 text-red-400 text-sm">
-                <XCircle className="h-4 w-4" />
-                <span>
-                  Invalid API key. Please check and try again.
-                </span>
+              <div className="mt-3 text-red-400 text-sm">
+                <div className="flex items-center space-x-2">
+                  <XCircle className="h-4 w-4" />
+                  <span>
+                    Invalid API key. Please check and try again.
+                  </span>
+                </div>
+                <p className="mt-2 ml-6">
+                  <a 
+                    href="https://aiassesstech.com/docs/api-keys" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-amber-400 hover:text-amber-300 underline"
+                  >
+                    Need help? View our API key setup guides →
+                  </a>
+                </p>
               </div>
             )}
 
