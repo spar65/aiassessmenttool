@@ -447,9 +447,10 @@ export default function AssessPage() {
       let questionIndex = partialResults.length;
 
       // Rate limit protection settings (v0.8.9: Added Gemini/Grok specific delays)
+      // v1.6.19: Increased Anthropic from 100ms to 500ms for token-based rate limits
       const DELAY_BETWEEN_QUESTIONS_MS: Record<string, number> = {
         openai: 500,    // OpenAI needs more delay
-        anthropic: 100, // Anthropic is generous
+        anthropic: 500, // v1.6.19: Anthropic has token-based rate limits (100k tokens/min)
         gemini: 200,    // Gemini is moderate
         grok: 1500,     // xAI has strict rate limits (60 req/min) - needs ~1.5s spacing
       };
