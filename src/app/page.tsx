@@ -1,32 +1,34 @@
 /**
- * Landing Page - Lead Capture
+ * Landing Page - Lead Capture with Assessment / Evaluation Toggle
  *
- * This is the entry point for the AI Assessment Tool demo app.
- * Users must enter their email and company name before proceeding.
+ * Entry point for the AI Assessment Tool demo app.
+ * Users pick Assessment (120-question battery) or Evaluation (paste AI output),
+ * enter their info, and proceed to the appropriate flow.
  *
- * Features:
- * - Lead capture form (email, company, role)
- * - Validation and error handling
- * - Submits to main platform API for lead tracking
- * - Stores lead data in localStorage for assessment linking
- *
- * Security:
- * - Email validation on client side
- * - Server-side validation via API
- * - No sensitive data collected here (API keys come later)
- *
- * @version 0.7.8.5
- * @see /configure for the next step in the user flow
+ * @version 0.8.0 — Phase 4: Added evaluation mode toggle + SDK snippets
+ * @see /configure for assessment flow
+ * @see /evaluate for evaluation flow
  */
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowRight, Zap, Target, CheckCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Zap,
+  Target,
+  CheckCircle,
+  FileText,
+  Clock,
+  Shield,
+} from "lucide-react";
+
+type DemoMode = "assessment" | "evaluation";
 
 export default function LandingPage() {
   const router = useRouter();
+  const [mode, setMode] = useState<DemoMode>("assessment");
   const [formData, setFormData] = useState({
     email: "",
     companyName: "",
@@ -34,21 +36,20 @@ export default function LandingPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // v1.5.1: Honeypot field for bot detection
   const [website, setWebsite] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return; // Guard against double-submit
-    
+    if (loading) return;
+
     setError("");
     setLoading(true);
 
     try {
-      // Register lead with server (optional - continue even if fails)
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://aiassesstech.com";
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "https://aiassesstech.com";
       let leadId: string | undefined;
-      
+
       try {
         const response = await fetch(`${API_URL}/api/leads/register`, {
           method: "POST",
@@ -57,8 +58,8 @@ export default function LandingPage() {
             email: formData.email,
             companyName: formData.companyName,
             role: formData.role || undefined,
-            source: "demo-app",
-            website, // v1.5.1: Honeypot field
+            source: mode === "evaluation" ? "demo-app-eval" : "demo-app",
+            website,
           }),
         });
 
@@ -66,16 +67,12 @@ export default function LandingPage() {
           const data = await response.json();
           leadId = data.leadId;
         } else {
-          // Lead registration failed - log but continue
           console.warn("Lead registration failed, continuing without tracking");
         }
       } catch (leadError) {
-        // Network error on lead registration - continue anyway
         console.warn("Lead registration error:", leadError);
       }
 
-      // Store lead data in localStorage for use during assessment
-      // Even without server leadId, store local data for linking
       localStorage.setItem(
         "leadData",
         JSON.stringify({
@@ -85,12 +82,26 @@ export default function LandingPage() {
         })
       );
 
-      router.push("/configure");
+      router.push(mode === "evaluation" ? "/evaluate" : "/configure");
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
-      setLoading(false); // Only reset loading on error (not on success redirect)
+      setLoading(false);
     }
   };
+
+  const assessmentFeatures = [
+    { icon: Target, text: "4 Moral Dimensions: Lying, Cheating, Stealing, Harm" },
+    { icon: Zap, text: "120 questions answered in ~10 minutes" },
+    { icon: CheckCircle, text: "Instant pass/fail with detailed scores" },
+  ];
+
+  const evaluationFeatures = [
+    { icon: FileText, text: "Paste any AI-generated output text" },
+    { icon: Clock, text: "LCSH behavioral classification in ~30 seconds" },
+    { icon: Shield, text: "GREEN / YELLOW / RED verdict with dimension scores" },
+  ];
+
+  const features = mode === "evaluation" ? evaluationFeatures : assessmentFeatures;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -134,26 +145,32 @@ export default function LandingPage() {
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Hero */}
+          {/* Left side - Hero (adapts to mode) */}
           <div>
             <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-              <span className="gradient-text">What's Your AI's</span>
-              <br />
-              <span className="text-white">Morality Score?</span>
+              {mode === "evaluation" ? (
+                <>
+                  <span className="gradient-text">Is Your AI&apos;s Output</span>
+                  <br />
+                  <span className="text-white">Ethically Aligned?</span>
+                </>
+              ) : (
+                <>
+                  <span className="gradient-text">What&apos;s Your AI&apos;s</span>
+                  <br />
+                  <span className="text-white">Morality Score?</span>
+                </>
+              )}
             </h1>
 
             <p className="text-xl text-gray-300 mb-8">
-              Test your AI system across 4 moral dimensions in under 10
-              minutes. Free assessment with instant results.
+              {mode === "evaluation"
+                ? "Paste AI-generated text and get an instant ethical alignment verdict. Free evaluation with detailed dimension scores."
+                : "Test your AI system across 4 moral dimensions in under 10 minutes. Free assessment with instant results."}
             </p>
 
-            {/* Features */}
             <div className="space-y-4 mb-8">
-              {[
-                { icon: Target, text: "4 Moral Dimensions: Lying, Cheating, Stealing, Harm" },
-                { icon: Zap, text: "120 questions answered in ~10 minutes" },
-                { icon: CheckCircle, text: "Instant pass/fail with detailed scores" },
-              ].map((feature, i) => (
+              {features.map((feature, i) => (
                 <div key={i} className="flex items-center space-x-3">
                   <feature.icon className="h-5 w-5 text-green-400" />
                   <span className="text-gray-300">{feature.text}</span>
@@ -161,22 +178,81 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Trust indicators */}
             <div className="flex items-center space-x-6 text-sm text-gray-500">
               <span>✓ Free to use</span>
               <span>✓ No account required</span>
-              <span>✓ Your API key stays in your browser</span>
+              {mode === "evaluation" ? (
+                <span>✓ No API key needed</span>
+              ) : (
+                <span>✓ Your API key stays in your browser</span>
+              )}
             </div>
           </div>
 
-          {/* Right side - Form */}
+          {/* Right side - Form with mode toggle */}
           <div className="glass rounded-2xl p-8">
+            {/* Mode Toggle */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button
+                type="button"
+                onClick={() => setMode("assessment")}
+                className={`flex flex-col items-center p-4 rounded-xl border-2 transition-all ${
+                  mode === "assessment"
+                    ? "border-green-400 bg-green-400/10"
+                    : "border-white/10 bg-white/5 hover:border-white/20"
+                }`}
+              >
+                <Target
+                  className={`h-6 w-6 mb-2 ${
+                    mode === "assessment" ? "text-green-400" : "text-gray-400"
+                  }`}
+                />
+                <span
+                  className={`text-sm font-semibold ${
+                    mode === "assessment" ? "text-green-400" : "text-gray-300"
+                  }`}
+                >
+                  Full Assessment
+                </span>
+                <span className="text-xs text-gray-500 mt-1">
+                  120 Q&apos;s · ~10 min
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMode("evaluation")}
+                className={`flex flex-col items-center p-4 rounded-xl border-2 transition-all ${
+                  mode === "evaluation"
+                    ? "border-green-400 bg-green-400/10"
+                    : "border-white/10 bg-white/5 hover:border-white/20"
+                }`}
+              >
+                <FileText
+                  className={`h-6 w-6 mb-2 ${
+                    mode === "evaluation" ? "text-green-400" : "text-gray-400"
+                  }`}
+                />
+                <span
+                  className={`text-sm font-semibold ${
+                    mode === "evaluation" ? "text-green-400" : "text-gray-300"
+                  }`}
+                >
+                  Quick Evaluation
+                </span>
+                <span className="text-xs text-gray-500 mt-1">
+                  Paste output · ~30s
+                </span>
+              </button>
+            </div>
+
             <h2 className="text-2xl font-bold text-white mb-6">
-              Start Your Assessment
+              {mode === "evaluation"
+                ? "Start Your Evaluation"
+                : "Start Your Assessment"}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* v1.5.1: Honeypot field - invisible to humans, bots will fill it */}
               <input
                 type="text"
                 name="website"
@@ -187,7 +263,7 @@ export default function LandingPage() {
                 autoComplete="off"
                 aria-hidden="true"
               />
-              
+
               <div>
                 <label
                   htmlFor="email"
@@ -243,21 +319,11 @@ export default function LandingPage() {
                   }
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all"
                 >
-                  <option value="" className="bg-slate-900">
-                    Select your role
-                  </option>
-                  <option value="Developer" className="bg-slate-900">
-                    Developer
-                  </option>
-                  <option value="PM" className="bg-slate-900">
-                    Product Manager
-                  </option>
-                  <option value="Executive" className="bg-slate-900">
-                    Executive
-                  </option>
-                  <option value="Other" className="bg-slate-900">
-                    Other
-                  </option>
+                  <option value="" className="bg-slate-900">Select your role</option>
+                  <option value="Developer" className="bg-slate-900">Developer</option>
+                  <option value="PM" className="bg-slate-900">Product Manager</option>
+                  <option value="Executive" className="bg-slate-900">Executive</option>
+                  <option value="Other" className="bg-slate-900">Other</option>
                 </select>
               </div>
 
@@ -272,18 +338,118 @@ export default function LandingPage() {
                 disabled={loading}
                 className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-green-500 hover:bg-green-400 disabled:bg-green-500/50 text-black font-semibold rounded-lg transition-all animate-pulse-glow"
               >
-                <span>{loading ? "Starting..." : "Start Assessment"}</span>
+                <span>
+                  {loading
+                    ? "Starting..."
+                    : mode === "evaluation"
+                    ? "Start Evaluation"
+                    : "Start Assessment"}
+                </span>
                 <ArrowRight className="h-5 w-5" />
               </button>
 
               <p className="text-xs text-gray-500 text-center">
-                By continuing, you agree to receive assessment results via
-                email.
+                By continuing, you agree to receive results via email.
               </p>
             </form>
           </div>
         </div>
       </main>
+
+      {/* SDK Code Snippets Section */}
+      <section className="border-t border-white/10 bg-black/30">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <h2 className="text-3xl font-bold text-center mb-3">
+            <span className="gradient-text">Integrate with Your CI/CD</span>
+          </h2>
+          <p className="text-gray-400 text-center mb-10 max-w-2xl mx-auto">
+            Use the same SDK for both assessments and evaluations. One key, two
+            capabilities.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Assessment snippet */}
+            <div className="glass rounded-xl p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <Target className="h-4 w-4 text-green-400" />
+                <span className="text-sm font-semibold text-green-400">
+                  Assessment — 120 Questions
+                </span>
+              </div>
+              <pre className="text-sm text-gray-300 overflow-x-auto">
+                <code>{`import { AIAssessClient } from '@aiassesstech/sdk';
+
+const client = new AIAssessClient({
+  healthCheckKey: process.env.AIASSESS_KEY!
+});
+
+const result = await client.assess(
+  async (question) => {
+    return await myAI.chat(question);
+  }
+);
+
+console.log(result.overallPassed);
+// true
+console.log(result.classification);
+// "Well Adjusted"`}</code>
+              </pre>
+            </div>
+
+            {/* Evaluation snippet */}
+            <div className="glass rounded-xl p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <FileText className="h-4 w-4 text-green-400" />
+                <span className="text-sm font-semibold text-green-400">
+                  Evaluation — Paste Output
+                </span>
+              </div>
+              <pre className="text-sm text-gray-300 overflow-x-auto">
+                <code>{`import { AIAssessClient } from '@aiassesstech/sdk';
+
+const client = new AIAssessClient({
+  healthCheckKey: process.env.AIASSESS_KEY!
+});
+
+const result = await client.evaluate({
+  outputText: "AI-generated text...",
+  targetAi: {
+    provider: "anthropic",
+    model: "claude-sonnet-4"
+  },
+});
+
+console.log(result.verdict);
+// "GREEN"
+console.log(result.overallScore);
+// 0.83`}</code>
+              </pre>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-gray-500 mt-8">
+            Available as{" "}
+            <a
+              href="https://www.npmjs.com/package/@aiassesstech/sdk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-400 hover:text-green-300"
+            >
+              @aiassesstech/sdk
+            </a>{" "}
+            (TypeScript) and{" "}
+            <a
+              href="https://pypi.org/project/aiassess/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-400 hover:text-green-300"
+            >
+              aiassess
+            </a>{" "}
+            (Python)
+          </p>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-6">
@@ -300,42 +466,13 @@ export default function LandingPage() {
             </p>
           </div>
           <nav className="flex items-center space-x-6">
-            <a
-              href="https://www.aiassesstech.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Privacy
-            </a>
-            <a
-              href="https://www.aiassesstech.com/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Terms
-            </a>
-            <a
-              href="https://www.aiassesstech.com/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Docs
-            </a>
-            <a
-              href="https://www.aiassesstech.com/contact"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Contact
-            </a>
+            <a href="https://www.aiassesstech.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Privacy</a>
+            <a href="https://www.aiassesstech.com/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Terms</a>
+            <a href="https://www.aiassesstech.com/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Docs</a>
+            <a href="https://www.aiassesstech.com/contact" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Contact</a>
           </nav>
         </div>
       </footer>
     </div>
   );
 }
-
