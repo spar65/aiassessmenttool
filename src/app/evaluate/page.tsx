@@ -17,6 +17,9 @@ import {
   FileText,
   AlertTriangle,
   Clock,
+  Key,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { Header, Footer } from "@/components";
 import {
@@ -26,10 +29,10 @@ import {
 } from "@/lib/evaluation";
 
 const PROVIDERS = [
-  { value: "openai", label: "OpenAI", models: ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"] },
-  { value: "anthropic", label: "Anthropic", models: ["claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5"] },
-  { value: "gemini", label: "Google Gemini", models: ["gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"] },
-  { value: "grok", label: "xAI Grok", models: ["grok-3", "grok-2", "grok-beta"] },
+  { value: "openai", label: "OpenAI", models: ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"], keyPrefix: "sk-", keyPlaceholder: "sk-proj-xxxxxxxxxxxxxxxxxx" },
+  { value: "anthropic", label: "Anthropic", models: ["claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5"], keyPrefix: "sk-ant-", keyPlaceholder: "sk-ant-xxxxxxxxxxxxxxxxxx" },
+  { value: "gemini", label: "Google Gemini", models: ["gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"], keyPrefix: "AIza", keyPlaceholder: "AIzaSyDxxxxxxxxxxxxxxxxxx" },
+  { value: "grok", label: "xAI Grok", models: ["grok-3", "grok-2", "grok-beta"], keyPrefix: "xai-", keyPlaceholder: "xai-xxxxxxxxxxxxxxxxxx" },
 ] as const;
 
 const SAMPLE_OUTPUT = `I understand your concern. While I cannot provide medical advice, I'd recommend consulting with a healthcare professional who can properly evaluate your symptoms. In the meantime, rest and staying hydrated are generally good practices. Please don't hesitate to call emergency services if your symptoms worsen significantly.`;
@@ -39,6 +42,9 @@ export default function EvaluatePage() {
   const [outputText, setOutputText] = useState("");
   const [provider, setProvider] = useState<string>("openai");
   const [model, setModel] = useState<string>("gpt-4o");
+  const [apiKey, setApiKey] = useState("");
+  const [keyValid, setKeyValid] = useState<boolean | null>(null);
+  const [validating, setValidating] = useState(false);
   const [subjectLabel, setSubjectLabel] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,7 +57,50 @@ export default function EvaluatePage() {
 
   useEffect(() => {
     setModel(currentModels[0] ?? "");
+    setApiKey("");
+    setKeyValid(null);
   }, [provider]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const currentProvider = PROVIDERS.find((p) => p.value === provider);
+
+  const validateApiKey = async () => {
+    if (!apiKey) {
+      setKeyValid(false);
+      return;
+    }
+
+    setValidating(true);
+    try {
+      if (provider === "openai") {
+        if (!apiKey.startsWith("sk-")) {
+          setKeyValid(false);
+          return;
+        }
+        const response = await fetch("https://api.openai.com/v1/models", {
+          headers: { Authorization: `Bearer ${apiKey}` },
+        });
+        setKeyValid(response.ok);
+      } else if (provider === "anthropic") {
+        setKeyValid(apiKey.startsWith("sk-ant-") && apiKey.length >= 100);
+      } else if (provider === "gemini") {
+        setKeyValid(apiKey.startsWith("AIza") && apiKey.length >= 35);
+      } else if (provider === "grok") {
+        setKeyValid(apiKey.startsWith("xai-") && apiKey.length >= 20);
+      }
+    } catch {
+      if (provider === "anthropic") {
+        setKeyValid(apiKey.startsWith("sk-ant-") && apiKey.length >= 100);
+      } else if (provider === "gemini") {
+        setKeyValid(apiKey.startsWith("AIza") && apiKey.length >= 35);
+      } else if (provider === "grok") {
+        setKeyValid(apiKey.startsWith("xai-") && apiKey.length >= 20);
+      } else {
+        setKeyValid(false);
+      }
+    } finally {
+      setValidating(false);
+    }
+  };
 
   const handleTextChange = (text: string) => {
     if (text.length <= MAX_CHARS) {
@@ -69,6 +118,10 @@ export default function EvaluatePage() {
     if (loading) return;
     if (!outputText.trim()) {
       setError("Please paste some AI-generated text to evaluate.");
+      return;
+    }
+    if (!apiKey || keyValid !== true) {
+      setError("Please enter and verify your API key before evaluating.");
       return;
     }
 
@@ -105,7 +158,7 @@ export default function EvaluatePage() {
         },
         body: JSON.stringify({
           outputText: outputText.trim(),
-          targetAi: { provider, model },
+          targetAi: { provider, model, apiKey },
           subjectLabel: subjectLabel || undefined,
           metadata: {
             source: "demo-app",
@@ -284,6 +337,63 @@ export default function EvaluatePage() {
               </div>
             </div>
 
+            {/* API Key */}
+            <div className="glass rounded-xl p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Key className="h-4 w-4 text-green-400" />
+                <h3 className="text-sm font-medium text-gray-300">
+                  {currentProvider?.label} API Key
+                </h3>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">
+                Your API key is used to run the evaluation. It is sent securely
+                to the platform and never stored.
+              </p>
+
+              <div className="flex space-x-3">
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => {
+                    setApiKey(e.target.value);
+                    setKeyValid(null);
+                  }}
+                  placeholder={currentProvider?.keyPlaceholder}
+                  className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={validateApiKey}
+                  disabled={validating || !apiKey}
+                  className="px-4 py-3 bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  {validating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span>Verify</span>
+                  )}
+                </button>
+              </div>
+
+              {keyValid === true && (
+                <div className="mt-3 flex items-center space-x-2 text-green-400 text-sm">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>
+                    {provider === "openai"
+                      ? `API key verified — ${currentProvider?.label} ready`
+                      : "API key format valid — will verify during evaluation"}
+                  </span>
+                </div>
+              )}
+
+              {keyValid === false && (
+                <div className="mt-3 flex items-center space-x-2 text-red-400 text-sm">
+                  <XCircle className="h-4 w-4" />
+                  <span>Invalid API key. Please check and try again.</span>
+                </div>
+              )}
+            </div>
+
             {/* Timing info */}
             <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
@@ -299,7 +409,7 @@ export default function EvaluatePage() {
 
             <button
               type="submit"
-              disabled={loading || !outputText.trim()}
+              disabled={loading || !outputText.trim() || keyValid !== true}
               className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-green-500 hover:bg-green-400 disabled:bg-green-500/50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-all animate-pulse-glow"
             >
               {loading ? (
