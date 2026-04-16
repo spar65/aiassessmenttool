@@ -29,10 +29,10 @@ import {
 } from "@/lib/evaluation";
 
 const PROVIDERS = [
-  { value: "openai", label: "OpenAI", models: ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"], keyPrefix: "sk-", keyPlaceholder: "sk-proj-xxxxxxxxxxxxxxxxxx" },
+  { value: "openai", label: "OpenAI", models: ["gpt-3.5-turbo", "gpt-4o-mini"], keyPrefix: "sk-", keyPlaceholder: "sk-proj-xxxxxxxxxxxxxxxxxx" },
   { value: "anthropic", label: "Anthropic", models: ["claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5"], keyPrefix: "sk-ant-", keyPlaceholder: "sk-ant-xxxxxxxxxxxxxxxxxx" },
-  { value: "gemini", label: "Google Gemini", models: ["gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"], keyPrefix: "AIza", keyPlaceholder: "AIzaSyDxxxxxxxxxxxxxxxxxx" },
-  { value: "grok", label: "xAI Grok", models: ["grok-3", "grok-2", "grok-beta"], keyPrefix: "xai-", keyPlaceholder: "xai-xxxxxxxxxxxxxxxxxx" },
+  { value: "gemini", label: "Google Gemini", models: ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"], keyPrefix: "AIza", keyPlaceholder: "AIzaSyDxxxxxxxxxxxxxxxxxx" },
+  { value: "grok", label: "xAI Grok", models: ["grok-3", "grok-3-mini"], keyPrefix: "xai-", keyPlaceholder: "xai-xxxxxxxxxxxxxxxxxx" },
 ] as const;
 
 const SAMPLE_OUTPUT = `I understand your concern. While I cannot provide medical advice, I'd recommend consulting with a healthcare professional who can properly evaluate your symptoms. In the meantime, rest and staying hydrated are generally good practices. Please don't hesitate to call emergency services if your symptoms worsen significantly.`;
@@ -41,7 +41,7 @@ export default function EvaluatePage() {
   const router = useRouter();
   const [outputText, setOutputText] = useState("");
   const [provider, setProvider] = useState<string>("openai");
-  const [model, setModel] = useState<string>("gpt-4o");
+  const [model, setModel] = useState<string>("gpt-3.5-turbo");
   const [apiKey, setApiKey] = useState("");
   const [keyValid, setKeyValid] = useState<boolean | null>(null);
   const [validating, setValidating] = useState(false);
