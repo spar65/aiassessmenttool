@@ -1,13 +1,10 @@
 /**
  * Evaluation Results Page
  *
- * Displays the results of an LCSH correspondence evaluation:
- * - Overall verdict (GREEN / YELLOW / RED)
- * - Dimension scores and per-dimension verdicts
- * - Alignment count
- * - Verification link
+ * Displays the results of an LCSH correspondence evaluation,
+ * matching the main platform's verify/evaluation format.
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @see /evaluate for input form
  */
 "use client";
@@ -26,46 +23,43 @@ import {
 import { Header, Footer } from "@/components";
 import {
   getEvalResult,
-  getVerdictColor,
-  getVerdictBg,
-  getDimensionVerdictColor,
   formatDuration,
   type EvaluationResultData,
 } from "@/lib/evaluation";
 
-const DIMENSION_META: Record<
+const VERDICT_COLORS: Record<
   string,
-  { label: string; bg: string; border: string; text: string }
+  { bg: string; text: string; border: string }
 > = {
-  lying: { label: "Lying", bg: "bg-red-500/20", border: "border-red-500/30", text: "text-red-400" },
-  cheating: { label: "Cheating", bg: "bg-amber-500/20", border: "border-amber-500/30", text: "text-amber-400" },
-  stealing: { label: "Stealing", bg: "bg-purple-500/20", border: "border-purple-500/30", text: "text-purple-400" },
-  harm: { label: "Harm", bg: "bg-cyan-500/20", border: "border-cyan-500/30", text: "text-cyan-400" },
+  GREEN: { bg: "bg-green-500/20", text: "text-green-400", border: "border-green-500/30" },
+  YELLOW: { bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/30" },
+  RED: { bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/30" },
+  PASS: { bg: "bg-green-500/20", text: "text-green-400", border: "border-green-500/30" },
+  CAUTION: { bg: "bg-yellow-500/20", text: "text-yellow-400", border: "border-yellow-500/30" },
+  FLAG: { bg: "bg-orange-500/20", text: "text-orange-400", border: "border-orange-500/30" },
+  CRITICAL: { bg: "bg-red-600/20", text: "text-red-500", border: "border-red-600/30" },
+};
+
+const DIM_COLORS: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  lying: { bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/30" },
+  cheating: { bg: "bg-amber-500/20", text: "text-amber-400", border: "border-amber-500/30" },
+  stealing: { bg: "bg-purple-500/20", text: "text-purple-400", border: "border-purple-500/30" },
+  harm: { bg: "bg-cyan-500/20", text: "text-cyan-400", border: "border-cyan-500/30" },
 };
 
 function VerdictIcon({ verdict }: { verdict: string }) {
   switch (verdict) {
     case "GREEN":
-      return <CheckCircle className="h-12 w-12 text-green-400" />;
+      return <CheckCircle className="h-10 w-10 text-green-400" />;
     case "YELLOW":
-      return <AlertTriangle className="h-12 w-12 text-yellow-400" />;
+      return <AlertTriangle className="h-10 w-10 text-amber-400" />;
     case "RED":
-      return <XCircle className="h-12 w-12 text-red-400" />;
+      return <XCircle className="h-10 w-10 text-red-400" />;
     default:
       return null;
-  }
-}
-
-function verdictLabel(verdict: string): string {
-  switch (verdict) {
-    case "GREEN":
-      return "Ethically Aligned";
-    case "YELLOW":
-      return "Caution Advised";
-    case "RED":
-      return "Ethical Concerns Detected";
-    default:
-      return verdict;
   }
 }
 
@@ -106,126 +100,128 @@ export default function EvaluationResultsPage() {
     );
   }
 
-  const scorePercent = Math.round(result.overallScore * 100);
+  const vc = VERDICT_COLORS[result.verdict] ?? VERDICT_COLORS.RED;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header showBackButton backUrl="/evaluate" />
 
       <main className="flex-1 py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          {/* Verdict Header */}
-          <div className="glass rounded-2xl p-8 mb-6">
-            <div className="flex items-center justify-center mb-6">
-              <div className="flex items-center space-x-4">
-                <div
-                  className={`w-16 h-16 rounded-full flex items-center justify-center ${getVerdictBg(
-                    result.verdict
-                  )}`}
-                >
-                  <VerdictIcon verdict={result.verdict} />
-                </div>
-                <div>
-                  <h1
-                    className={`text-3xl font-bold ${getVerdictColor(
-                      result.verdict
-                    )}`}
+        <div className="max-w-4xl mx-auto">
+          {/* Result Summary */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-8 mb-8">
+            <div className="text-center mb-8">
+              {/* Verdict badge */}
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center space-x-3">
+                  <div
+                    className={`w-16 h-16 rounded-full ${vc.bg} flex items-center justify-center`}
                   >
-                    {result.verdict}
-                  </h1>
-                  <p className="text-gray-400">{verdictLabel(result.verdict)}</p>
+                    <VerdictIcon verdict={result.verdict} />
+                  </div>
+                  <div className="text-left">
+                    <h1 className={`text-3xl font-bold ${vc.text}`}>
+                      {result.verdict}
+                    </h1>
+                    <p className="text-gray-400">AI Output Evaluation</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key metrics */}
+              <div className="flex items-center justify-center gap-8 mt-6">
+                <div>
+                  <div className="text-4xl font-bold text-white">
+                    {(result.overallScore * 100).toFixed(0)}%
+                  </div>
+                  <div className="text-gray-400 text-sm">Overall Score</div>
+                </div>
+                <div className="w-px h-12 bg-white/10" />
+                <div>
+                  <div className="text-4xl font-bold text-white">
+                    {result.alignedCount}/{result.totalPrinciples}
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    Principles Aligned
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Overall Score */}
-            <div className="text-center mb-6">
-              <div className="text-5xl font-bold text-white mb-1">
-                {scorePercent}%
-              </div>
-              <div className="text-gray-400 text-sm">
-                Overall Alignment Score
-              </div>
-            </div>
-
-            {/* Alignment count */}
-            <div
-              className={`p-4 rounded-lg text-center border ${getVerdictBg(
-                result.verdict
-              )}`}
-            >
-              <p className={getVerdictColor(result.verdict)}>
-                {result.alignedCount} of {result.totalPrinciples} principles
-                aligned
-              </p>
-            </div>
-          </div>
-
-          {/* Dimension Scores */}
-          <div className="glass rounded-2xl p-6 mb-6">
-            <h2 className="text-lg font-semibold text-white mb-4">
-              Dimension Scores
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Dimension Scores */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {(["lying", "cheating", "stealing", "harm"] as const).map(
                 (dim) => {
-                  const meta = DIMENSION_META[dim];
+                  const colors = DIM_COLORS[dim];
                   const score = result.scores[dim];
                   const dimVerdict = result.verdicts[dim];
+                  const dvc = VERDICT_COLORS[dimVerdict] ?? VERDICT_COLORS.RED;
+                  const aligned = Math.round(score * 3);
 
                   return (
                     <div
                       key={dim}
-                      className={`p-4 rounded-xl ${meta.bg} border ${meta.border}`}
+                      className={`p-4 rounded-xl ${colors.bg} border ${colors.border}`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-300 text-sm">
-                          {meta.label}
+                        <span className="text-gray-300 capitalize text-sm">
+                          {dim}
+                        </span>
+                        <span
+                          className={`text-xs px-1.5 py-0.5 rounded ${dvc.bg} ${dvc.text}`}
+                        >
+                          {dimVerdict}
                         </span>
                       </div>
-                      <div className={`text-2xl font-bold ${meta.text}`}>
+                      <div className={`text-2xl font-bold ${colors.text}`}>
                         {(score * 100).toFixed(0)}%
                       </div>
-                      <div
-                        className={`text-xs font-medium mt-1 ${getDimensionVerdictColor(
-                          dimVerdict
-                        )}`}
-                      >
-                        {dimVerdict}
+                      <div className="text-xs text-gray-500">
+                        {aligned}/3 aligned
                       </div>
                     </div>
                   );
                 }
               )}
             </div>
-          </div>
 
-          {/* Verification */}
-          <div className="glass rounded-2xl p-6 mb-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <Shield className="h-5 w-5 text-green-400" />
-              <h2 className="text-lg font-semibold text-white">
-                Verification
-              </h2>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                <span className="text-gray-400 text-sm">Evaluation ID</span>
-                <code className="text-xs text-white bg-white/10 px-2 py-1 rounded max-w-[200px] truncate">
-                  {result.evaluationId}
-                </code>
+            {/* Details grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center space-x-2">
+                  <Clock className="h-4 w-4" />
+                  <span>Timestamps</span>
+                </h3>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-400 text-sm">Completed</span>
+                  <span className="text-white text-sm font-medium">
+                    {new Date(result.evaluatedAt).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-400 text-sm">Duration</span>
+                  <span className="text-white text-sm font-medium">
+                    {formatDuration(result.durationMs)}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                <span className="text-gray-400 text-sm">Evaluated At</span>
-                <span className="text-white text-sm">
-                  {new Date(result.evaluatedAt).toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                <span className="text-gray-400 text-sm">Duration</span>
-                <div className="flex items-center space-x-1.5 text-white text-sm">
-                  <Clock className="h-3.5 w-3.5 text-gray-400" />
-                  <span>{formatDuration(result.durationMs)}</span>
+
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center space-x-2">
+                  <Shield className="h-4 w-4" />
+                  <span>Assessment</span>
+                </h3>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-400 text-sm">Framework</span>
+                  <span className="text-white text-sm font-medium">
+                    LCSH v1.0
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-400 text-sm">Evaluation ID</span>
+                  <code className="text-xs text-white bg-white/10 px-2 py-1 rounded max-w-[180px] truncate">
+                    {result.evaluationId}
+                  </code>
                 </div>
               </div>
             </div>
