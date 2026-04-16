@@ -27,7 +27,7 @@ const corsHeaders = {
 const MAX_CONTEXT_MESSAGES = 40;
 
 // Default model
-const DEFAULT_MODEL = "grok-2";
+const DEFAULT_MODEL = "grok-3";
 
 // API endpoint
 const GROK_API_URL = "https://api.x.ai/v1/chat/completions";

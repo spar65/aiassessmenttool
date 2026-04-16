@@ -180,23 +180,19 @@ export function formatDuration(ms: number): string {
 export function estimateDuration(model: string): string {
   const estimates: Record<string, string> = {
     // OpenAI
-    "gpt-4o": "5-8 minutes",
-    "gpt-4-turbo": "6-10 minutes",
-    "gpt-4": "8-12 minutes",
     "gpt-3.5-turbo": "4-6 minutes",
+    "gpt-4o-mini": "4-6 minutes",
     // Anthropic
-    "claude-sonnet-4-20250514": "6-10 minutes",
-    "claude-opus-4-20250514": "10-15 minutes",
-    "claude-3-5-sonnet-20241022": "8-12 minutes",
-    "claude-3-5-haiku-20241022": "4-6 minutes",
-    "claude-3-haiku-20240307": "3-5 minutes",
+    "claude-sonnet-4-6": "6-10 minutes",
+    "claude-opus-4-6": "10-15 minutes",
+    "claude-haiku-4-5": "3-5 minutes",
     // Gemini
-    "gemini-2.0-flash-exp": "4-6 minutes",
-    "gemini-1.5-pro": "8-12 minutes",
-    "gemini-1.5-flash": "5-8 minutes",
+    "gemini-2.0-flash": "4-6 minutes",
+    "gemini-2.5-flash": "4-6 minutes",
+    "gemini-2.5-pro": "8-12 minutes",
     // Grok
-    "grok-2": "6-10 minutes",
-    "grok-beta": "5-8 minutes",
+    "grok-3": "6-10 minutes",
+    "grok-3-mini": "5-8 minutes",
   };
   
   return estimates[model] || "5-10 minutes";
